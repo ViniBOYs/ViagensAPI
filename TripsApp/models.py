@@ -70,9 +70,10 @@ class Pagamento(models.Model):
     modoPagamento = models.ForeignKey(TipoPagamento,related_name='modoPagamento',on_delete=models.CASCADE)
     valorTotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     animal = models.IntegerField(default=0)
+    qtdPessoas = models.IntegerField(default=1)
     
     def save(self, *args, **kwargs):
-        self.valorTotal = self.viagemFK.periodoDias * self.viagemFK.valorDiaria * (self.animal/3)
+        self.valorTotal = self.viagemFK.periodoDias * self.viagemFK.valorDiaria * (self.animal/3) * self.qtdPessoas
         super(Pagamento, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -85,11 +86,13 @@ class Reserva(models.Model):
     qtdPessoas = models.IntegerField(default=1)
     valorFinal = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     animal = models.BooleanField()
-''' # Tem que concluir aq
+
     def save(self, *args, **kwargs):
-        self.qtdPessoas = self.viagemFK        
+        self.qtdPessoas = self.pagamentoFK.qtdPessoas
+        self.valorFinal = self.pagamentoFK.valorTotal
+        self.animal = self.pagamentoFK.animal         
         super(Pagamento, self).save(*args, **kwargs)
-'''
+
 
     def __str__(self):
         return self.valorFinal
