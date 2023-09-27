@@ -24,9 +24,13 @@ class Local(models.Model):
         return self.nomeLocal
 
 class Periodo(models.Model):
-    inicioPeriodo = models.DateField(auto_now_add=True)
-    finalPeriodo = models.DateField(auto_now_add=True)
-    diasPeriodo = abs((finalPeriodo - inicioPeriodo).days)
+    inicioPeriodo = models.DateField()
+    finalPeriodo = models.DateField()
+    diasPeriodo = models.IntegerField()
+
+    def save(self, *args, **kwargs):
+        self.periodoDias = abs((self.finalPeriodo - self.inicioPeriodo).days)
+        super(Viagem, self).save(*args, **kwargs)
     
     def __str__(self):
         return self.inicioPeriodo
@@ -38,6 +42,7 @@ class Viagem(models.Model):
     animal = models.BooleanField(null=False)
     periodoFK = models.ForeignKey(Periodo, related_name='periodoFK', on_delete=models.CASCADE)
     periodoDias = models.IntegerField(default=0)
+    categoriaFK = models.ForeignKey(Categoria, related_name='categoriaFK', on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         self.periodoDias = self.periodoFK.diasPeriodo
